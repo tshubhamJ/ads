@@ -2,16 +2,15 @@ package com.auth0.ads;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequestMapping(value = "/v1")
@@ -33,7 +32,7 @@ public class AdController {
     }
 
 
-    @GetMapping(value = "/ads")
+    @GetMapping(value = "/ad")
     @Transactional
     public @ResponseBody List<Ad> getAds() {
 
@@ -44,10 +43,55 @@ public class AdController {
         Iterator<Ad> ite = opObj.iterator();
         while (ite.hasNext()) {
             list.add(ite.next());
-        }
+            }
 
         return list;
     }
+
+    @DeleteMapping(value = "/ad/{id}",produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+    @Transactional
+    public ResponseEntity<String> deleteArticle(@PathVariable("id") Long id) {
+        Optional<Ad> opObj = adRepository.findById(id);
+        if (opObj.isPresent()) {
+            adRepository.deleteById(id);
+            String responseMessage = "Your id" + " " + id + " is succesfully Deleted with statuscode";
+            return new ResponseEntity<String>(responseMessage, HttpStatus.OK);
+        } else {
+            String responseMessage = "Invalid id";
+            return new ResponseEntity<String>(responseMessage,HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @PutMapping(value = "/ad/{id}")
+    @Transactional
+    public @ResponseBody ResponseEntity updateAd(@PathVariable("id") Long id, @RequestBody Ad ad)
+    {
+        Optional<Ad> adObj = adRepository.findById(id);
+        if (adObj.isPresent()) {
+            ad.setId(id);
+
+            System.out.println("updated data at location id"+"="+ id);
+            adRepository.save(ad);
+            return new ResponseEntity<Void>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+    }
+
+/*    @PutMapping(value = "/ad/{id}")
+    @Transactional
+    public @ResponseBody ResponseEntity updateAd(@PathVariable("id") Long id, @RequestParam String owner)
+    {
+        Optional<Ad> adObj = adRepository.findById(id);
+        if (adObj.isPresent()) {
+            Ad adData = adObj.get();
+            adData.setOwner(owner);
+            adRepository.save(adData);
+            return new ResponseEntity<Void>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+    }*/
 
 
     @PostMapping(value = "/ad")
@@ -64,5 +108,7 @@ public class AdController {
 //        return ad;
          return ad;
     }
+
+
 
 }

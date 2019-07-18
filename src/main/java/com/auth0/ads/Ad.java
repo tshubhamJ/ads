@@ -17,7 +17,7 @@ import java.math.BigDecimal;
     @EqualsAndHashCode
     public class Ad {
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
 
         public Long id;
 
@@ -37,6 +37,34 @@ import java.math.BigDecimal;
             this.price = price;
             this.id=id;
         }
+
+    public void setId(Long id) {
+        this.id = id;
     }
+
+    public void setOwner(String owner) {
+            this.owner=owner;
+    }
+
+    public void setDescription(String description) {
+            this.description=description;
+    }
+
+    public void setPrice(BigDecimal price) {
+            this.price=price;
+    }
+    public String getOwner()
+    {
+        return owner;
+    }
+    public String getDescription()
+    {
+        return description;
+    }
+    public BigDecimal getPrice()
+    {
+        return price;
+    }
+}
 
 
